@@ -24,6 +24,7 @@
 
 import optparse
 
+from rhev_functions import *
 
 description = """
 vmcreate is a script for creating vm's based on specified values
