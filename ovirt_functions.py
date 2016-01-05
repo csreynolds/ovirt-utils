@@ -50,7 +50,10 @@ def parseoptions(basename, description, args):
     p.add_argument("-p", "--port", dest="port", help="API port to contact", metavar="443", default="443")
     p.add_argument("-v", "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0)
     p.add_argument("-c", "--cluster", dest="cluster", help="VM cluster", metavar="cluster", default="Default")
+    p.add_argument('-d', "--datacenter", dest="datacenter", help="datacenter to create the vlan at", metavar='datacenter')
     p.add_argument("-n", "--vmname", dest="vmname", help="VM NAME", metavar="vmname", default="Default")
+    p.add_argument("-l", "--vlan", dest="vlan", help="VLAN ID", metavar='vlan')
+    p.add_argument("-vl", "--vlanname", dest="vlanname", help="VLANname", metavar='vlanname')
     p.add_argument("--vmcpu", dest="vmcpu", help="VM CPU", metavar="vmcpu", default="1")
     p.add_argument("--vmmem", dest="vmmem", help="VM RAM in GB", metavar="vmmem", default="8")
     p.add_argument("--sdtype", dest="sdtype", help="SD type", metavar="sdtype", default="Default")
@@ -58,18 +61,40 @@ def parseoptions(basename, description, args):
     p.add_argument("--osver", dest="osver", help="OS version", metavar="osver", default="rhel_6x64")
     p.add_argument("--vmgest", dest="vmgest", help="Management network to use", metavar="vmgest", default="rhevm")
     p.add_argument("--vmserv", dest="vmserv", help="Service Network to use", metavar="vmserv", default="rhevm")
-    #Nagios bits
+
     p.add_argument("--host", dest="host", help="Show messages while running", metavar='host')
     p.add_argument("--storage", dest="storage", help="Show messages while running", metavar='storage')
-####
-    p.add_argument("-t", "--table", dest="table", help="Input file in CSV format", metavar='table')
-    p.add_argument("-t", "--template", dest="template", help="VM template", metavar="template", default="template")
-    p.add_argument("-t", "--tagall", dest="tagall", help="Tag all hosts with elas_manage", metavar='0/1', default=0)
-####
+    p.add_argument("--table", dest="table", help="Input file in CSV format", metavar='table')
+
+    p.add_argument("--template", dest="template", help="VM template", metavar="template", default="template")
+    p.add_argument("--tagall", dest="tagall", help="Tag all hosts with elas_manage", metavar='0/1', default=0)
+
     p.add_argument("-a", "--action", dest="action", help="Power action to execute", metavar="action", default="pm-suspend")
-    p.add_argument("--ha", dest="ha", help="High Availability enabled", metavar="ha", default="1", type='int')
-    p.add_arguemnt('-r', "--release", dest="release", help="Select release to deploy. Like 20130528.0.el6_4", metavar='release', default="latest")
-    p.add_argument('-d', "--delay", dest="delay", help="Set delay to way until activation after install is sent", metavar='delay', default=900)
+    p.add_argument("--ha", dest="ha", help="High Availability enabled", metavar="ha", default="1")
+    p.add_argument("--delay", dest="delay", help="Set delay to way until activation after install is sent", metavar='delay', default=900)
+    p.add_argument("-q", "--query", action="store_true", dest="query", help="Query the values stored", default=False)
+    p.add_argument("-f", "--file", dest="file", help="OVF file to parse", metavar='ovf', default=None)
+    p.add_argument("--policy", dest="policy", help="Set destination policy", metavar='policy', default="power_saving")
+    p.add_argument("--batch", dest="batch", help="Batch number of hosts to return from maintenance", metavar='[0-n]', default=5)
+    p.add_argument("--bond", dest="bond", help="Bond to create under", metavar='bond', default="bond0")
+
+    p.add_argument("--startday", dest="startday", help="Starting day of period", metavar="startday", default="1")
+    p.add_argument("--endday", dest="endday", help="Ending day of period, defaults to end of month", metavar="endday")
+    p.add_argument("--month", dest="month", help="Month to gather data from", metavar="month")
+    p.add_argument("--year", dest="year", help="Year to gather data from", metavar="year")
+
+    p.add_argument("--dbname", dest="dbname", help="RHEV-M database name", metavar="dbname", default="engine")
+    p.add_argument("--dbuser", dest="dbuser", help="RHEV-M database user", metavar="dbuser", default="engine")
+    p.add_argument("--dbpass", dest="dbpass", help="RHEV-M database password", metavar="dbpass", default="redhat")
+    p.add_argument("-D", action="store_true", dest="dbaskpassword", help="Ask for DB password", default=False)
+
+    p.add_argument('-m', "--machine", dest="machine", help="Machine name beggining", metavar="machine", default=None)
+    p.add_argument("--reverse", dest="reverse", help="Reverse behaviour with machine name", metavar="reverse", default=0)
+    p.add_argument("--release", dest="release", help="Select release to deploy. Like 20130528.0.el6_4", metavar="release", default="latest")
+
+
+
+
 
     options = p.parse_args()
 
