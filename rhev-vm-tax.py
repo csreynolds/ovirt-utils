@@ -14,47 +14,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
 # GNU General Public License for more details.
 
-import optparse
 import calendar
 import datetime
 
 import psycopg2
-from rhev_functions import *
-
+from ovirt_functions import *
 
 description = """
 rhev-vm-tax is a script for gathering statistics about VM usage that can be used to tax usage
 """
 
-# Option parsing
-p = optparse.OptionParser("rhev-vm-tax.py [arguments]", description=description)
-p.add_option("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal",
-             default="admin@internal")
-p.add_option("-w", "--password", dest="password", help="Password to use with username", metavar="admin",
-             default="redhat")
-p.add_option("-W", action="store_true", dest="askpassword", help="Ask for password", metavar="admin", default=False)
-p.add_option("-k", action="store_true", dest="keyring", help="use python keyring for user/password", metavar="keyring",
-             default=False)
-p.add_option("-s", "--server", dest="server", help="RHEV-M server address/hostname to contact", metavar="server",
-             default="127.0.0.1")
-p.add_option("--dbname", dest="dbname", help="RHEV-M database name", metavar="dbname", default="engine")
-p.add_option("--dbuser", dest="dbuser", help="RHEV-M database user", metavar="dbuser", default="engine")
-p.add_option("--dbpass", dest="dbpass", help="RHEV-M database password", metavar="dbpass", default="redhat")
-p.add_option("-D", action="store_true", dest="dbaskpassword", help="Ask for DB password", metavar="admin",
-             default=False)
-p.add_option("-p", "--port", dest="port", help="API port to contact", metavar="443", default="443")
-p.add_option('-v', "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0,
-             type='int')
-p.add_option("-n", "--name", dest="name", help="VM name", metavar="name")
-p.add_option("-d", "--startday", dest="startday", help="Starting day of period", metavar="startday", default="1")
-p.add_option("-e", "--endday", dest="endday", help="Ending day of period, defaults to end of month", metavar="endday")
-p.add_option("-m", "--month", dest="month", help="Month to gather data from", metavar="month", type='int')
-p.add_option("-y", "--year", dest="year", help="Year to gather data from", metavar="year", type='int')
-
-(options, args) = p.parse_args()
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
 options.username, options.password = getuserpass(options)
-
 
 # TODO: Create keyring for DBpassword
 if options.dbaskpassword:

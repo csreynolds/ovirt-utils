@@ -15,15 +15,67 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
 # GNU General Public License for more details.
 
+import os
 import sys
 import time
 import getpass
 import keyring
+import urllib
+import glob
+from random import choice
 
-from ovirtsdk.xml import params
-from ovirtsdk.api import API
+try:
+    from ovirtsdk.api import API
+    from ovirtsdk.xml import params
+except ImportError:
+    print "requires ovirt-engine-sdk-python rpm"
+    sys.exit(1)
 
 # FUNCTIONS
+def parseoptions(basename, description, args):
+    try:    
+        import argparse
+    except InportError:
+        print "requires python-argparse rpm if < python2.7 installed"
+        sys.exit(1)
+
+    p = argparse.ArgumentParser(basename + " [arguments]", description=description)
+
+    p.add_argument("-i", "--isoname", dest="ISO_NAME", help="ISO Filename", metavar="isoname", default="redhat.iso")
+    p.add_argument("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal", default="admin@internal")
+    p.add_argument("-w", "--password", dest="password", help="Password to use with username", metavar="admin", default="redhat")
+    p.add_argument("-k", action="store_true", dest="keyring", help="use python keyring for user/password", default=False)
+    p.add_argument("-W", action="store_true", dest="askpassword", help="Ask for password", default=False)
+    p.add_argument("-s", "--server", dest="server", help="RHEV-M server address/hostname to contact", metavar="server", default="127.0.0.1")
+    p.add_argument("-p", "--port", dest="port", help="API port to contact", metavar="443", default="443")
+    p.add_argument("-v", "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0)
+    p.add_argument("-c", "--cluster", dest="cluster", help="VM cluster", metavar="cluster", default="Default")
+    p.add_argument("-n", "--vmname", dest="vmname", help="VM NAME", metavar="vmname", default="Default")
+    p.add_argument("--vmcpu", dest="vmcpu", help="VM CPU", metavar="vmcpu", default="1")
+    p.add_argument("--vmmem", dest="vmmem", help="VM RAM in GB", metavar="vmmem", default="8")
+    p.add_argument("--sdtype", dest="sdtype", help="SD type", metavar="sdtype", default="Default")
+    p.add_argument("--sdsize", dest="sdsize", help="SD size", metavar="sdsize", default="20")
+    p.add_argument("--osver", dest="osver", help="OS version", metavar="osver", default="rhel_6x64")
+    p.add_argument("--vmgest", dest="vmgest", help="Management network to use", metavar="vmgest", default="rhevm")
+    p.add_argument("--vmserv", dest="vmserv", help="Service Network to use", metavar="vmserv", default="rhevm")
+    #Nagios bits
+    p.add_argument("--host", dest="host", help="Show messages while running", metavar='host')
+    p.add_argument("--storage", dest="storage", help="Show messages while running", metavar='storage')
+####
+    p.add_argument("-t", "--table", dest="table", help="Input file in CSV format", metavar='table')
+    p.add_argument("-t", "--template", dest="template", help="VM template", metavar="template", default="template")
+    p.add_argument("-t", "--tagall", dest="tagall", help="Tag all hosts with elas_manage", metavar='0/1', default=0)
+####
+    p.add_argument("-a", "--action", dest="action", help="Power action to execute", metavar="action", default="pm-suspend")
+    p.add_argument("--ha", dest="ha", help="High Availability enabled", metavar="ha", default="1", type='int')
+    p.add_arguemnt('-r', "--release", dest="release", help="Select release to deploy. Like 20130528.0.el6_4", metavar='release', default="latest")
+    p.add_argument('-d', "--delay", dest="delay", help="Set delay to way until activation after install is sent", metavar='delay', default=900)
+
+    options = p.parse_args()
+
+    return options
+
+
 def getuserpass(options):
     """Checks if it should ask for password interactively, use the keyring or just return the default values or
     commandline values provided by arguments.

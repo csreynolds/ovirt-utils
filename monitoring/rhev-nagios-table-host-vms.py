@@ -16,10 +16,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import sys
-import optparse
-
-from ovirtsdk.xml import params
+from ovirt_functions import *
 
 description = """
 RHEV-nagios-table-host output  is a script for querying RHEVM via API to get host status
@@ -28,14 +25,8 @@ It's goal is to output a table of host/vm status for simple monitoring via exter
 
 """
 
-# Option parsing
-p = optparse.OptionParser("rhev-nagios-table-host.py [arguments]", description=description)
-p.add_option('-v', "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0,
-             type='int')
-p.add_option("--host", dest="host", help="Show messages while running", metavar='host')
-p.add_option("-t", "--table", dest="table", help="Input file in CSV format", metavar='table')
-
-(options, args) = p.parse_args()
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
 # MAIN PROGRAM
 if not options.host:

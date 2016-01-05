@@ -15,26 +15,15 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import optparse
-import keyring
-
-from rhev_functions import *
+from ovirt_functions import *
 
 description = """
 RHEV-keyring is a script for mantaining the keyring used by rhev script for storing password
 
 """
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
-# Option parsing
-p = optparse.OptionParser("rhev-clone.py [arguments]", description=description)
-p.add_option("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal",
-             default=False)
-p.add_option("-w", "--password", dest="password", help="Password to use with username", metavar="admin",
-             default=False)
-p.add_option("-W", action="store_true", dest="askpassword", help="Ask for password", metavar="admin", default=False)
-p.add_option('-q', "--query", action="store_true", dest="query", help="Query the values stored", default=False)
-
-(options, args) = p.parse_args()
 
 if options.askpassword:
     options.password = getpass.getpass("Enter password: ")

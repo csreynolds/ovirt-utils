@@ -17,34 +17,14 @@
 
 import optparse
 
-from rhev_functions import *
+from ovirt_functions import *
 
 description = """
 RHEV-vlan is a script for creating via API new VLAN's in RHEV and attach it to DC/Cluster/hosts.
 
 """
-
-# Option parsing
-p = optparse.OptionParser("rhev-vlan.py [arguments]", description=description)
-p.add_option("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal",
-             default="admin@internal")
-p.add_option("-w", "--password", dest="password", help="Password to use with username", metavar="admin",
-             default="admin")
-p.add_option("-k", action="store_true", dest="keyring", help="use python keyring for user/password", metavar="keyring",
-             default=False)
-p.add_option("-W", action="store_true", dest="askpassword", help="Ask for password", metavar="admin", default=False)
-p.add_option("-s", "--server", dest="server", help="RHEV-M server address/hostname to contact", metavar="127.0.0.1",
-             default="127.0.0.1")
-p.add_option("-p", "--port", dest="port", help="API port to contact", metavar="443", default="443")
-p.add_option('-v', "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0,
-             type='int')
-p.add_option('-d', "--datacenter", dest="datacenter", help="datacenter to create the vlan at", metavar='datacenter')
-p.add_option('-l', "--vlan", dest="vlan", help="VLAN ID", metavar='vlan')
-p.add_option('-n', "--vlanname", dest="vlanname", help="VLANname", metavar='vlanname')
-p.add_option('-c', "--cluster", dest="cluster", help="Cluster to attach to", metavar='cluster')
-p.add_option('-b', "--bond", dest="bond", help="Bond to create under", metavar='bond', default="bond0")
-
-(options, args) = p.parse_args()
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
 options.username, options.password = getuserpass(options)
 

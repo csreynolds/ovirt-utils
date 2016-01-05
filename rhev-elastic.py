@@ -30,12 +30,7 @@
 # elas_manage: manage this host by using the elastic management script (EMS)
 # elas_maint : this host has been put on maintenance by the EMS
 
-import optparse
-import os
-from random import choice
-
-from rhev_functions import *
-
+from ovirt_functions import *
 
 description = """
 RHEV-Elastic is a script for managing via API the hypervisors under RHEV command, both RHEV-H and RHEL hosts.
@@ -45,27 +40,9 @@ order to save energy, automatically activating or deactivating hosts when
 needed in order to satisfy your environment needs.
 
 """
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
-# Option parsing
-p = optparse.OptionParser("rhev-elastic.py [arguments]", description=description)
-p.add_option("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal",
-             default="admin@internal")
-p.add_option("-w", "--password", dest="password", help="Password to use with username", metavar="admin",
-             default="admin")
-p.add_option("-k", action="store_true", dest="keyring", help="use python keyring for user/password", metavar="keyring",
-             default=False)
-p.add_option("-W", action="store_true", dest="askpassword", help="Ask for password", metavar="admin", default=False)
-p.add_option("-s", "--server", dest="server", help="RHEV-M server address/hostname to contact", metavar="127.0.0.1",
-             default="127.0.0.1")
-p.add_option("-p", "--port", dest="port", help="API port to contact", metavar="443", default="443")
-p.add_option("-a", "--action", dest="action", help="Power action to execute", metavar="action", default="pm-suspend")
-p.add_option('-v', "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0,
-             type='int')
-p.add_option('-t', "--tagall", dest="tagall", help="Tag all hosts with elas_manage", metavar='0/1', default=0,
-             type='int')
-p.add_option('-c', "--cluster", dest="cluster", help="Select cluster name to process", metavar='cluster', default=None)
-
-(options, args) = p.parse_args()
 
 options.username, options.password = getuserpass(options)
 

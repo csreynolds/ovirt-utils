@@ -18,10 +18,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import sys
-import optparse
-
-from ovirtsdk.xml import params
 from rhev_functions import *
 
 description = """
@@ -31,23 +27,8 @@ It's goal is to output a table of host/vm status for simple monitoring via exter
 
 """
 
-# Option parsing
-p = optparse.OptionParser("rhev-nagios-table.py [arguments]", description=description)
-p.add_option("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal",
-             default="admin@internal")
-p.add_option("-w", "--password", dest="password", help="Password to use with username", metavar="admin",
-             default="admin")
-p.add_option("-k", action="store_true", dest="keyring", help="use python keyring for user/password", metavar="keyring",
-             default=False)
-p.add_option("-W", action="store_true", dest="askpassword", help="Ask for password", metavar="admin", default=False)
-p.add_option("-s", "--server", dest="server", help="RHEV-M server address/hostname to contact", metavar="127.0.0.1",
-             default="127.0.0.1")
-p.add_option("-p", "--port", dest="port", help="API port to contact", metavar="443", default="443")
-p.add_option('-v', "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0,
-             type='int')
-p.add_option("-t", "--table", dest="table", help="Output file in CSV format", metavar='table')
-
-(options, args) = p.parse_args()
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
 options.username, options.password = getuserpass(options)
 

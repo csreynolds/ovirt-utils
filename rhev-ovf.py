@@ -17,20 +17,15 @@
 
 
 import xml.etree.ElementTree as elementtree
-import sys
-import optparse
+from ovirt_functions import *
 
 description = """
 Parse an OVF file on disk to show the information needed to start
 the VM via command line
 """
 
-# Option parsing
-p = optparse.OptionParser("rhev-ovf.py [arguments]", description=description)
-p.add_option('-f', "--file", dest="file", help="OVF file to parse",
-             metavar='ovf', default=None)
-
-(options, args) = p.parse_args()
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
 
 def getvminfo(host, vmid, display, root):

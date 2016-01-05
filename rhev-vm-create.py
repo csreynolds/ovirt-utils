@@ -21,9 +21,6 @@
 # Vincent Van der Kussen  (vincent@vanderkussen.org)
 #
 
-
-import optparse
-
 from rhev_functions import *
 
 description = """
@@ -37,31 +34,8 @@ vmserv can be: rhevm, or your defined networks
 osver can be: rhel_6x64, etc
 """
 
-# Option parsing
-p = optparse.OptionParser("rhev-vm-create.py [arguments]", description=description)
-p.add_option("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal",
-             default="admin@internal")
-p.add_option("-w", "--password", dest="password", help="Password to use with username", metavar="admin",
-             default="redhat")
-p.add_option("-k", action="store_true", dest="keyring", help="use python keyring for user/password", metavar="keyring",
-             default=False)
-p.add_option("-W", action="store_true", dest="askpassword", help="Ask for password", metavar="admin", default=False)
-p.add_option("-s", "--server", dest="server", help="RHEV-M server address/hostname to contact", metavar="server",
-             default="127.0.0.1")
-p.add_option("-p", "--port", dest="port", help="API port to contact", metavar="443", default="443")
-p.add_option('-v', "--verbosity", dest="verbosity", help="Show messages while running", metavar='[0-n]', default=0,
-             type='int')
-p.add_option("-n", "--name", dest="name", help="VM name", metavar="name", default="name")
-p.add_option("-c", "--cluster", dest="cluster", help="VM cluster", metavar="cluster", default="Default")
-p.add_option("--vmcpu", dest="vmcpu", help="VM CPU", metavar="vmcpu", default="1")
-p.add_option("--vmmem", dest="vmmem", help="VM RAM in GB", metavar="vmmem", default="1")
-p.add_option("--sdtype", dest="sdtype", help="SD type", metavar="sdtype", default="Default")
-p.add_option("--sdsize", dest="sdsize", help="SD size", metavar="sdsize", default="20")
-p.add_option("--osver", dest="osver", help="OS version", metavar="osver", default="rhel_6x64")
-p.add_option("--vmgest", dest="vmgest", help="Management network to use", metavar="vmgest", default="rhevm")
-p.add_option("--vmserv", dest="vmserv", help="Service Network to use", metavar="vmserv", default="rhevm")
-
-(options, args) = p.parse_args()
+#Parse args in ovirt_functions: parseoptions(basename, description, args)
+options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
 options.username, options.password = getuserpass(options)
 
