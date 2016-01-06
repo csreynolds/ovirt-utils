@@ -19,7 +19,6 @@ import os
 import sys
 import time
 import getpass
-import keyring
 import urllib
 import glob
 from random import choice
@@ -43,6 +42,8 @@ def parseoptions(basename, description, args):
 
     p.add_argument("-i", "--isoname", dest="isoname", help="ISO Filename", metavar="isoname", default="redhat.iso")
     p.add_argument("--isodomain", dest="isodomain", help="ISO Domain", metavar="isodomain", default="ISO_DOMAIN")
+    p.add_argument("--storagedomain", dest="storagedomain", help="Storage Domain", metavar="storagedomain", default="STORAGE_DOMAIN")
+
     p.add_argument("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal", default="admin@internal")
     p.add_argument("-w", "--password", dest="password", help="Password to use with username", metavar="admin", default="redhat")
     p.add_argument("-k", action="store_true", dest="keyring", help="use python keyring for user/password", default=False)
@@ -56,6 +57,8 @@ def parseoptions(basename, description, args):
     p.add_argument("-l", "--vlan", dest="vlan", help="VLAN ID", metavar='vlan')
     p.add_argument("-vl", "--vlanname", dest="vlanname", help="VLAN name", metavar='vlanname')
     p.add_argument("--vmip", dest="vmip", help="VM 1st nic IP", metavar="vmip", default="127.0.0.1")
+    p.add_argument("--vnictype", dest="vnictype", help="Interface type ov vnic", metavar="vnictype", default="virtio")
+
     p.add_argument("--vmcpu", dest="vmcpu", help="VM CPU", metavar="vmcpu", default="1")
     p.add_argument("--vmmem", dest="vmmem", help="VM RAM in GB", metavar="vmmem", default="8")
     p.add_argument("--sdtype", dest="sdtype", help="SD type", metavar="sdtype", default="Default")
@@ -68,7 +71,8 @@ def parseoptions(basename, description, args):
     p.add_argument("--storage", dest="storage", help="Show messages while running", metavar='storage')
     p.add_argument("--table", dest="table", help="Input file in CSV format", metavar='table')
 
-    p.add_argument("--template", dest="template", help="VM template", metavar="template", default="template")
+    p.add_argument("--templatename", dest="templatename", help="VM template name", metavar="templatename", default="Blank")
+    p.add_argument("--templatetype", dest="templatetype", help="VM template type", metavar="templatetype", default="Server")
     p.add_argument("--tagall", dest="tagall", help="Tag all hosts with elas_manage", metavar='0/1', default=0)
 
     p.add_argument("-a", "--action", dest="action", help="Power action to execute", metavar="action", default="pm-suspend")
@@ -143,6 +147,11 @@ def apilogin(url, username, password, insecure=True, persistent_auth=True, sessi
     """
     api = None
 
+#Grab crt if not present
+#if os.path.isfile("rhevm.cer") is False:
+#    cafile = urllib.URLopener()
+#    cafile.retrieve("http://cloud.suffolk.harris.com/ca.crt", "rhevm.cer")
+#
     try:
         api = API(url=url, username=username, password=password, insecure=insecure, persistent_auth=persistent_auth,
                   session_timeout=session_timeout)

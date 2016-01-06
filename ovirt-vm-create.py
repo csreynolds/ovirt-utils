@@ -21,7 +21,7 @@
 # Vincent Van der Kussen  (vincent@vanderkussen.org)
 #
 
-from rhev_functions import *
+from ovirt_functions import *
 
 description = """
 vmcreate is a script for creating vm's based on specified values
@@ -39,8 +39,6 @@ options = parseoptions(sys.argv[0], description, sys.argv[1:])
 
 options.username, options.password = getuserpass(options)
 
-from rhev_functions import *
-
 baseurl = "https://%s:%s" % (options.server, options.port)
 
 api = apilogin(url=baseurl, username=options.username, password=options.password)
@@ -54,19 +52,19 @@ except:
 # Define VM based on parameters
 if __name__ == "__main__":
     vmparams = params.VM(os=params.OperatingSystem(type_=options.osver),
-                         cpu=params.CPU(topology=params.CpuTopology(cores=int(options.vmcpu))), name=options.name,
+                         cpu=params.CPU(topology=params.CpuTopology(cores=int(options.vmcpu))), name=options.vmname,
                          memory=1024 * 1024 * 1024 * int(options.vmmem), cluster=api.clusters.get(name=options.cluster),
-                         template=api.templates.get(name="Blank"), type_="server")
+                         template=api.templates.get(name=options.templatename), type_=options.templatetype)
     vmdisk = params.Disk(size=1024 * 1024 * 1024 * int(options.sdsize), wipe_after_delete=True, sparse=True,
-                         interface="virtio", type_="System", format="cow", storage_domains=params.StorageDomains(
-                             storage_domain=[api.storagedomains.get(name="data_domain")]))
+                         interface=options.vnictype, type_="System", format="cow", storage_domains=params.StorageDomains(
+                             storage_domain=[api.storagedomains.get(name=options.storagedomain)]))
     vmnet = params.NIC()
 
     network_gest = params.Network(name=options.vmgest)
     network_serv = params.Network(name=options.vmserv)
 
-    nic_gest = params.NIC(name='eth0', network=network_gest, interface='virtio')
-    nic_serv = params.NIC(name='eth1', network=network_serv, interface='virtio')
+    nic_gest = params.NIC(name='eth0', network=network_gest, interface=options.vnictype)
+    nic_serv = params.NIC(name='eth1', network=network_serv, interface=options.vnictype)
 
     try:
         api.vms.add(vmparams)
@@ -79,7 +77,7 @@ if __name__ == "__main__":
 
     if options.verbosity > 1:
         print("Attaching networks and boot order...")
-    vm = api.vms.get(name=options.name)
+    vm = api.vms.get(name=options.vmname)
     vm.nics.add(nic_gest)
     vm.nics.add(nic_serv)
 
@@ -104,7 +102,7 @@ if __name__ == "__main__":
     if options.verbosity > 1:
         print("VM creation successful")
 
-    vm = api.vms.get(name=options.name)
+    vm = api.vms.get(name=options.vmname)
     vm.memory_policy.guaranteed = 1 * 1024 * 1024
     vm.high_availability.enabled = True
     vm.update()
