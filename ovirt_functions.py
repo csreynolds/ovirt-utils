@@ -41,7 +41,8 @@ def parseoptions(basename, description, args):
 
     p = argparse.ArgumentParser(basename + " [arguments]", description=description)
 
-    p.add_argument("-i", "--isoname", dest="ISO_NAME", help="ISO Filename", metavar="isoname", default="redhat.iso")
+    p.add_argument("-i", "--isoname", dest="isoname", help="ISO Filename", metavar="isoname", default="redhat.iso")
+    p.add_argument("--isodomain", dest="isodomain", help="ISO Domain", metavar="isodomain", default="ISO_DOMAIN")
     p.add_argument("-u", "--user", dest="username", help="Username to connect to RHEVM API", metavar="admin@internal", default="admin@internal")
     p.add_argument("-w", "--password", dest="password", help="Password to use with username", metavar="admin", default="redhat")
     p.add_argument("-k", action="store_true", dest="keyring", help="use python keyring for user/password", default=False)
@@ -53,7 +54,8 @@ def parseoptions(basename, description, args):
     p.add_argument('-d', "--datacenter", dest="datacenter", help="datacenter to create the vlan at", metavar='datacenter')
     p.add_argument("-n", "--vmname", dest="vmname", help="VM NAME", metavar="vmname", default="Default")
     p.add_argument("-l", "--vlan", dest="vlan", help="VLAN ID", metavar='vlan')
-    p.add_argument("-vl", "--vlanname", dest="vlanname", help="VLANname", metavar='vlanname')
+    p.add_argument("-vl", "--vlanname", dest="vlanname", help="VLAN name", metavar='vlanname')
+    p.add_argument("--vmip", dest="vmip", help="VM 1st nic IP", metavar="vmip", default="127.0.0.1")
     p.add_argument("--vmcpu", dest="vmcpu", help="VM CPU", metavar="vmcpu", default="1")
     p.add_argument("--vmmem", dest="vmmem", help="VM RAM in GB", metavar="vmmem", default="8")
     p.add_argument("--sdtype", dest="sdtype", help="SD type", metavar="sdtype", default="Default")
